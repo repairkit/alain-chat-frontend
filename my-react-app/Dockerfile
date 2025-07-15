@@ -1,39 +1,36 @@
-# Multi-stage build for React + Vite application
+# React + Vite アプリケーション用のマルチステージビルド
 
-# Build stage
+# ビルドステージ
 FROM node:20-alpine AS builder
 
-# Set working directory
+# 作業ディレクトリを設定
 WORKDIR /app
 
-# Copy package files
+# パッケージファイルをコピー
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production=false
+# 依存関係をインストール
+RUN npm ci 
 
-# Copy source code
+# ソースコードをコピー
 COPY . .
 
-# Build the application
+# アプリケーションをビルド
 RUN npm run build
 
-# Production stage
+# 本番ステージ
 FROM nginx:alpine AS production
 
-# Copy built assets from builder stage
+# ビルダーステージからビルドされたアセットをコピー
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy custom nginx configuration (optional)
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Create a simple nginx configuration for SPA routing
+# SPA用のNginx設定を追加
 RUN echo 'server { \
     listen 80; \
     server_name localhost; \
+    root /usr/share/nginx/html; \
+    index index.html; \
     location / { \
-        root /usr/share/nginx/html; \
-        index index.html index.htm; \
         try_files $uri $uri/ /index.html; \
     } \
     error_page 500 502 503 504 /50x.html; \
@@ -42,8 +39,8 @@ RUN echo 'server { \
     } \
 }' > /etc/nginx/conf.d/default.conf
 
-# Expose port 80
+# ポート80を公開
 EXPOSE 80
 
-# Start nginx
+# nginxを起動
 CMD ["nginx", "-g", "daemon off;"]

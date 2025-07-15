@@ -91,7 +91,7 @@ const Chat = () => {
                                     <img src="/alain-avatar.png" alt="Alain" width={96} height={96} />
                                 </div>
                                 <h2 className="welcome-title">Hello, I'm Alain</h2>
-                                <p className="welcome-subtitle">How can I assist you today?</p>
+                                <p className="welcome-subtitle">哲学者アランに悩みを相談しましょう</p>
                             </div>
                         )}
 
